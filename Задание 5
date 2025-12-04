@@ -1,0 +1,104 @@
+using System;
+
+public enum EmploymentStatus
+{
+    Active,
+    OnLeave,
+    Terminated
+}
+
+public class Employee
+{
+    public string Name;
+    public DateTime? HireDate;
+    public EmploymentStatus Status;
+
+    public Employee(string name, DateTime? hireDate, EmploymentStatus status)
+    {
+        Name = name;
+        HireDate = hireDate;
+        Status = status;
+    }
+
+    public Employee() 
+    {
+        Name = string.Empty;
+        HireDate = null;
+        Status = EmploymentStatus.Active;
+    }
+
+    public int GetYearsWorked()
+    {
+        if (HireDate == null)
+        {
+            return -1;
+        }
+
+        DateTime hireDateValue = HireDate.Value;
+        DateTime now = DateTime.Now;
+
+        int years = now.Year - hireDateValue.Year;
+
+        if (now.Month < hireDateValue.Month ||
+            (now.Month == hireDateValue.Month && now.Day < hireDateValue.Day))
+        {
+            years--;
+        }
+
+        return years;
+    }
+
+    public override string ToString()
+    {
+        string statusString;
+        switch (Status)
+        {
+            case EmploymentStatus.Active:
+                statusString = "Активен";
+                break;
+            case EmploymentStatus.OnLeave:
+                statusString = "В отпуске";
+                break;
+            case EmploymentStatus.Terminated:
+                statusString = "Уволен";
+                break;
+            default:
+                statusString = Status.ToString();
+                break;
+        }
+
+        string yearsWorkedInfo;
+        int years = GetYearsWorked();
+        if (years == -1)
+        {
+            yearsWorkedInfo = "не указан";
+        }
+        else
+        {
+            yearsWorkedInfo = years.ToString();
+        }
+
+        return $"{Name}, статус: {statusString}, стаж: {yearsWorkedInfo}";
+    }
+}
+
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        var emp = new Employee
+        {
+            Name = "Пётр",
+            HireDate = new DateTime(2020, 3, 15),
+            Status = EmploymentStatus.Active
+        };
+
+        Console.WriteLine(emp.GetYearsWorked());
+
+        emp.HireDate = null;
+
+        Console.WriteLine(emp.GetYearsWorked());
+
+        Console.WriteLine(emp);
+    }
+}
